@@ -1,0 +1,11 @@
+{"compile":[
+["c:\\Nim\\projects\\blake2\\src\\bits\\nimcache\\blake2_ops.c", "gcc.exe -c  -w -mno-ms-bitfields  -IC:\\Nim\\Nim\\lib -o c:\\Nim\\projects\\blake2\\src\\bits\\nimcache\\blake2_ops.o c:\\Nim\\projects\\blake2\\src\\bits\\nimcache\\blake2_ops.c"],
+["c:\\Nim\\projects\\blake2\\src\\bits\\nimcache\\blake2_bit.c", "gcc.exe -c  -w -mno-ms-bitfields  -IC:\\Nim\\Nim\\lib -o c:\\Nim\\projects\\blake2\\src\\bits\\nimcache\\blake2_bit.o c:\\Nim\\projects\\blake2\\src\\bits\\nimcache\\blake2_bit.c"]
+],
+"link":[
+"c:\\Nim\\projects\\blake2\\src\\bits\\nimcache\\blake2_ops.o",
+"c:\\Nim\\projects\\blake2\\src\\bits\\nimcache\\stdlib_system.o",
+"c:\\Nim\\projects\\blake2\\src\\bits\\nimcache\\blake2_bit.o"
+],
+"linkcmd": "gcc.exe   -o c:\\Nim\\projects\\blake2\\src\\bits\\ops.exe  c:\\Nim\\projects\\blake2\\src\\bits\\nimcache\\blake2_ops.o c:\\Nim\\projects\\blake2\\src\\bits\\nimcache\\stdlib_system.o c:\\Nim\\projects\\blake2\\src\\bits\\nimcache\\blake2_bit.o    "
+}

@@ -1,0 +1,10 @@
+{"compile":[
+["C:\\Nim\\projects\\blake2\\src\\nimcache\\blake2_blake2.c", "gcc.exe -c  -w -mno-ms-bitfields -O3 -fno-strict-aliasing  -Ic:\\nim\\nim\\lib -o C:\\Nim\\projects\\blake2\\src\\nimcache\\blake2_blake2.o C:\\Nim\\projects\\blake2\\src\\nimcache\\blake2_blake2.c"],
+["C:\\Nim\\projects\\blake2\\src\\nimcache\\stdlib_system.c", "gcc.exe -c  -w -mno-ms-bitfields -O3 -fno-strict-aliasing  -Ic:\\nim\\nim\\lib -o C:\\Nim\\projects\\blake2\\src\\nimcache\\stdlib_system.o C:\\Nim\\projects\\blake2\\src\\nimcache\\stdlib_system.c"]
+],
+"link":[
+"C:\\Nim\\projects\\blake2\\src\\nimcache\\blake2_blake2.o",
+"C:\\Nim\\projects\\blake2\\src\\nimcache\\stdlib_system.o"
+],
+"linkcmd": "gcc.exe   -o C:\\Nim\\projects\\blake2\\src\\blake2.exe  C:\\Nim\\projects\\blake2\\src\\nimcache\\blake2_blake2.o C:\\Nim\\projects\\blake2\\src\\nimcache\\stdlib_system.o    "
+}
