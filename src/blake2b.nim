@@ -1,7 +1,9 @@
 import strutils
+import strformat
 import sequtils
 import streams
 import bits / ops
+import osproc
 
 type
   Blake2bCtx = object
@@ -12,6 +14,9 @@ type
     outlen: uint64      # digest size
 
 const
+  blake2b_max_outlen = 64'u64
+  blake2b_max_keylen = 64'u64
+
   blake2b_iv: array[8, uint64] = mapLiterals( [
     0x6A09E667F3BCC908, 0xBB67AE8584CAA73B,
     0x3C6EF372FE94F82B, 0xA54FF53A5F1D36F1,
@@ -32,24 +37,17 @@ const
     [  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 ] ,
     [ 14, 10,  4,  8,  9, 15, 13,  6,  1, 12,  0,  2, 11,  7,  5,  3 ] ], byte)
 
-proc `$`(p: pointer): string =
-  result = $cast[int64](p)
-
-proc print(arr: openarray[uint64]) =
-  stdOut.write("[")
+proc print(arr: openarray[uint64]; col : int = 3 ) =
+  ## Print helper to view 64bit ints in hex notation
+  ## 'cols' specifies number of columns
   for i in 0..arr.high:
     stdOUt.write arr[i].toHex 
     stdOut.write ","
-    if (i mod 3) == 2:
+    if (i mod col) == (col-1):
       stdOut.write "\n"
-  stdOut.write "]\n"
-
-
-proc b2b_get64(p : uint64): uint64 =
-  ## little endian byte access
-  result = p  
 
 template mix(v,a,b,c,d,x,y : untyped) =
+  ## Blake 2b mixing function
   v[a] = v[a] + v[b] + x
   v[d] = rotr(v[d] xor v[a], 32)
   v[c] = v[c] + v[d]
@@ -78,10 +76,10 @@ proc blake2b_compress(ctx: var Blake2bCtx; last: bool) =
     # m[i] = cast[ptr uint64](addr ctx.b[8*i])[]
     # m[i] = b2b_get64(ctx.b[8*i])
 
-  echo "m: "
-  print m
-  echo "v: "
-  print v
+  # echo "m: "
+  # print m
+  # echo "v: "
+  # print v
 
   for i in 0..<12:  # twelve rounds
     mix(v, 0, 4,  8, 12, m[sigma[i][ 0]], m[sigma[i][ 1]])
@@ -93,8 +91,8 @@ proc blake2b_compress(ctx: var Blake2bCtx; last: bool) =
     mix(v, 2, 7,  8, 13, m[sigma[i][12]], m[sigma[i][13]])
     mix(v, 3, 4,  9, 14, m[sigma[i][14]], m[sigma[i][15]])
 
-    echo "i: ", i
-    print v
+    # echo "i: ", i
+    # print v
   
   for i in 0..<8:
     ctx.h[i] = ctx.h[i] xor v[i] xor v[i+8]
@@ -125,11 +123,11 @@ proc blake2b_update*(ctx: var Blake2bCtx, data: openArray[byte]) =
 
 # proc blake2b_init*(ctx: var Blake2bCtx, outlen: uint64, key: var cstring; keylen: int): int64 =
 proc blake2b_init*(ctx: var Blake2bCtx, outlen: uint64, key: openArray[byte]): int64 =
-  ## Initialize Black2bCtx with an optional key
-  ## 1 <= outlen <=  64 - digest size (in bytes)
-  ## Secret key is optional, default keylen = 0, keylen <= 64
-  doAssert( 1'u64 <= outlen and outlen <= 64'u64 )
-  doAssert( len(key) <= 64)
+  ## Initialize Black2bCtx 
+  ## The `key` is an optional sequence of 0-64 bytes.
+  ## Returns 0 on success, else -1.
+  if blake2b_max_outlen < outlen : return -1
+  if blake2b_max_keylen < len(key).uint64: return -1
 
   for i in 0..<8:
     ctx.h[i] = blake2b_iv[i]
@@ -150,7 +148,7 @@ proc blake2b_init*(ctx: var Blake2bCtx, outlen: uint64, key: openArray[byte]): i
 
 proc blake2b_final*(ctx: var Blake2bCtx): string =
   ctx.t[0] += ctx.c
-  if(ctx.t[0] > ctx.c):
+  if(ctx.t[0] < ctx.c):
     ctx.t[1] += 1
 
   while ctx.c < 128:
@@ -234,7 +232,17 @@ when isMainModule:
   let inp = conv(tmp)
   echo "abc hash: ", blake2b(inp)
 
-  # echo "file hash: ", blake2b_file("tmp")
+  let filename = "C:/nim/projects/blake2/tests/testfile1"
+  let filename2 = "C:/Users/Marco/Downloads/Options_6.80.372.exe"
+  let r1 = blake2b_file(filename2)
+  let command = &"b2sum {filename2}"
+  let r2 = execCmd(command)
+  echo "nim blake2: ", r1
+  echo "b2sum     : ", r2
+
+  
+
+
 
 #   let filename = "C:/Users/Marco/Downloads/manjaro-kde-17.1.2-stable-x86_64.iso"
 #   echo "hash:", blake2b_file(filename)

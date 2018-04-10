@@ -26,7 +26,9 @@ proc get64*(a: openarray[byte]): uint64 =
     (uint64(a[7]) shl 56)
 
 when isMainModule:
-  let x: uint64 = 18
+  let x: uint64 = 18 # 0001 0010
   doAssert rotl(x, 129) == 36
   doAssert rotr(x, -65) == 36
   doAssert rotr(x, 63) == 36
+  doAssert rotr(x, 63) == 36
+  doAssert rotl(x, 1) == 36
